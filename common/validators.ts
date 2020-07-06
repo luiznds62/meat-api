@@ -1,10 +1,9 @@
 import { User } from "../users/users.model";
 
-export const checkDuplicatedCPF = (cpf: String) => {
-  return User.findOne({ cpf: cpf })
+export const checkDuplicatedCPF = (email: String, cpf: String) => {
+  return User.findOne({ cpf: cpf, email: email })
     .then((user: User) => {
       if (user) {
-        console.log("caiu aqui");
         return false;
       }
       return true;

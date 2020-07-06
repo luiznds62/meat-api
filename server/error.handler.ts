@@ -24,7 +24,7 @@ export const handleError = (
     case "ValidationError":
       err.statusCode = 400;
       const messages: any[] = [];
-
+      console.log(err.errors);
       for (let name in err.errors) {
         let error = err.errors[name].properties;
         switch (error.type) {
@@ -51,6 +51,16 @@ export const handleError = (
           case "regexp":
             messages.push({
               message: `O valor: '${error.value}' é inválido para o campo '${error.path}', formato incorreto ou escrito errado`,
+            });
+            break;
+          case "min":
+            messages.push({
+              message: `O valor: '${error.value}' é inválido para o campo '${error.path}', pois é menor que o mínimo permitido: ${error.min}`,
+            });
+            break;
+          case "max":
+            messages.push({
+              message: `O valor: '${error.value}' é inválido para o campo '${error.path}', pois é maior que o máximo permitido: ${error.max}`,
             });
             break;
           default:
