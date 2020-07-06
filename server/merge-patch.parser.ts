@@ -8,6 +8,10 @@ export const mergePatchBodyParser = (
   resp: restify.Response,
   next
 ) => {
+  if (!req.query.sort) {
+    req.query.sort = "+_id";
+  }
+
   if (req.getContentType() === mpContentType && req.method === "PATCH") {
     (<any>req).rawBody = req.body;
     try {
