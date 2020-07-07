@@ -11,6 +11,7 @@ export const handleError = (
       message: err.message,
     };
   };
+
   switch (err.name) {
     case "MongoError":
       if (err.code === 11000) {
@@ -72,5 +73,6 @@ export const handleError = (
       });
       break;
   }
+
   done();
 };
