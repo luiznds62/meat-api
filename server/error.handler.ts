@@ -24,7 +24,6 @@ export const handleError = (
     case "ValidationError":
       err.statusCode = 400;
       const messages: any[] = [];
-      console.log(err.errors);
       for (let name in err.errors) {
         let error = err.errors[name].properties;
         switch (error.type) {

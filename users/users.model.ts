@@ -2,6 +2,7 @@ import * as mongoose from "mongoose";
 import { validateCPF, checkDuplicatedCPF } from "../common/validators";
 import * as bcrypt from "bcrypt";
 import { environment } from "../common/environment";
+import { BadRequestError } from "restify-errors";
 
 export interface User extends mongoose.Document {
   name: string;
@@ -75,18 +76,26 @@ const updateMiddleware = function (next) {
 };
 
 const validateMiddleware = function (next) {
-  if (!checkDuplicatedCPF(this.email, this.cpf)) {
-    next(new Error(`CPF: ${this.cpf} já cadastrado`));
-  } else if (!validateCPF(this.cpf)) {
-    next(new Error(`CPF: ${this.cpf} inválido`));
-  } else {
-    next();
-  }
+  return checkDuplicatedCPF(this.email, this.cpf)
+    .then((result) => {
+      if (!result) {
+        next(new BadRequestError(`CPF: ${this.cpf} já cadastrado`));
+      } else {
+        if (!validateCPF(this.cpf)) {
+          next(new BadRequestError(`CPF: ${this.cpf} inválido`));
+        } else {
+          next();
+        }
+      }
+    })
+    .catch((err) => {
+      next(new Error(`Ocorreu um erro ao validar o CPF: ${err}`));
+    });
 };
 
+userSchema.pre("validate", validateMiddleware);
 userSchema.pre("save", saveMiddleware);
 userSchema.pre("findOneAndUpdate", updateMiddleware);
 userSchema.pre("update", updateMiddleware);
-userSchema.pre("validate", validateMiddleware);
 
 export const User = mongoose.model<User, UserModel>("User", userSchema);
