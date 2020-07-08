@@ -215,11 +215,6 @@ test("put /users/aaaaa - not found", () => {
     .catch(fail);
 });
 
-/*
-  1. Cria-se um usuario com gender Male
-  2. Atualiza, mas nao informa gender
-  3. Testa se o documento foi substituido -> gender undefined
-*/
 test("put /users:/id", () => {
   return request(address)
     .post("/users")

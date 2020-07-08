@@ -24,10 +24,6 @@ test("get /reviews/aaaaa - not found", () => {
     .catch(fail);
 });
 
-/*
-  Exemplo de como pode ser um post para reviews
-*/
-
 test("post /reviews", () => {
   return request(address)
     .post("/reviews")
