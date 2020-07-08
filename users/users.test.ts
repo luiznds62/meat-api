@@ -20,14 +20,14 @@ test("post /users", () => {
       name: "usuario1",
       email: "usuario1@email.com",
       password: "123456",
-      cpf: "962.116.531-82",
+      cpf: "66738238010",
     })
     .then((response) => {
       expect(response.status).toBe(200);
       expect(response.body._id).toBeDefined();
       expect(response.body.name).toBe("usuario1");
       expect(response.body.email).toBe("usuario1@email.com");
-      expect(response.body.cpf).toBe("962.116.531-82");
+      expect(response.body.cpf).toBe("66738238010");
       expect(response.body.password).toBeUndefined();
     })
     .catch(fail);
@@ -39,7 +39,8 @@ test("post /users - nome obrigatorio", () => {
     .send({
       email: "user12@gmail.com",
       password: "123456",
-      cpf: "675.028.852-93",
+      gender: "Male",
+      cpf: "74005253016",
     })
     .then((response) => {
       expect(response.status).toBe(400);
@@ -60,6 +61,8 @@ test("get /users - findByEmail", () => {
       name: "usuario 3",
       email: "usuario3@email.com",
       password: "123456",
+      gender: "Male",
+      cpf: "67967368002",
     })
     .then((response) =>
       request(address).get("/users").query({ email: "usuario3@email.com" })
@@ -183,6 +186,8 @@ test("patch /users/:id", () => {
       name: "usuario2",
       email: "usuario2@email.com",
       password: "123456",
+      cpf: "68675541058",
+      gender: "Male",
     })
     .then((response) =>
       request(address).patch(`/users/${response.body._id}`).send({
@@ -194,6 +199,8 @@ test("patch /users/:id", () => {
       expect(response.body._id).toBeDefined();
       expect(response.body.name).toBe("usuario2 - patch");
       expect(response.body.email).toBe("usuario2@email.com");
+      expect(response.body.cpf).toBe("68675541058");
+      expect(response.body.gender).toBe("Male");
       expect(response.body.password).toBeUndefined();
     })
     .catch(fail);
