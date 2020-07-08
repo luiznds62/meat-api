@@ -69,6 +69,7 @@ export const handleError = (
         }
       }
       err.toJSON = () => ({
+        message: "Ocorreu um erro de validação",
         errors: messages,
       });
       break;
