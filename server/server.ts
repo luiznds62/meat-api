@@ -3,6 +3,7 @@ import * as mongoose from "mongoose";
 import * as fs from "fs";
 
 import { environment } from "../common/environment";
+import { logger } from "../common/logger";
 import { Router } from "../common/router";
 import { mergePatchBodyParser } from "./merge-patch.parser";
 import { tokenParser } from "../security/token.parser";
@@ -24,6 +25,7 @@ export class Server {
         const options: restify.ServerOptions = {
           name: "meat-api",
           version: "1.0.0",
+          log: logger,
         };
 
         if (environment.security.enableHTTPS) {

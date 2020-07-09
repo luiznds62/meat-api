@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "ts-node jest.startup.ts",
-    "start": "node dist/main.js",
+    "start": "pm2 start ecosystem.config.js",
+    "restart": "pm2 restart ecosystem.config.js --update-env",
+    "start_prod": "pm2 start ecosystem.config.js --env production",
+    "stop": "pm2 stop ecosystem.config.js",
+    "delete": "pm2 delete ecosystem.config.js",
     "dev": "nodemon dist/main.js",
     "debug": "node dist/index.js --inspect"
   },
@@ -36,7 +40,8 @@
     "jsonwebtoken": "8.1.1",
     "mongoose": "4.13.9",
     "restify": "6.3.4",
-    "restify-errors": "5.0.0"
+    "restify-errors": "5.0.0",
+    "winston": "^3.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
