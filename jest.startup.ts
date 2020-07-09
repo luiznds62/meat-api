@@ -18,6 +18,16 @@ const beforeAllTests = () => {
   return server
     .bootstrap([usersRouter, reviewsRouter, restaurantsRouter])
     .then(() => User.remove({}).exec())
+    .then(() => {
+      let admin = new User();
+      admin.name = "admin";
+      admin.email = "admin@hotmail.com";
+      admin.password = "123456";
+      admin.gender = "Male";
+      admin.cpf = "81947876023";
+      admin.profiles = ["admin", "user"];
+      return admin.save();
+    })
     .then(() => Review.remove({}).exec())
     .then(() => Restaurant.remove({}).exec());
 };

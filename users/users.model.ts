@@ -8,6 +8,7 @@ export interface User extends mongoose.Document {
   name: string;
   cpf: string;
   email: string;
+  gender: string;
   password: string;
   profiles: string[];
   matches(password: string): boolean;
