@@ -2,6 +2,8 @@ import { ModelRouter } from "../common/model-router";
 import * as restify from "restify";
 import { User } from "./users.model";
 import { authenticate } from "../security/auth.handler";
+import { authorize } from "../security/authz.handler";
+import { NotFoundError, ForbiddenError } from "restify-errors";
 
 class UsersRouter extends ModelRouter<User> {
   constructor() {
@@ -10,6 +12,23 @@ class UsersRouter extends ModelRouter<User> {
       document.password = undefined;
     });
   }
+
+  verifyUser = (req: restify.Request, resp, next) => {
+    User.findOne({ _id: req.params.id }).then((user) => {
+      if (user) {
+        if (
+          req.authenticated.profiles.find((p) => p == "admin") != undefined ||
+          req.params.id == req.authenticated._id
+        ) {
+          next();
+        } else {
+          next(new ForbiddenError("Acesso negado"));
+        }
+      } else {
+        next(new NotFoundError("Documento não encontrado"));
+      }
+    });
+  };
 
   findByEmail = (req, resp, next) => {
     if (req.query.email) {
@@ -30,14 +49,37 @@ class UsersRouter extends ModelRouter<User> {
   applyRoutes(application: restify.Server) {
     application.get(
       { path: this.basePath, version: "2.0.0" },
+      authorize("admin"),
       this.findByEmail
     );
-    application.get({ path: this.basePath, version: "1.0.0" }, this.findAll);
-    application.get(`${this.basePath}/:id`, [this.validateId, this.findById]);
-    application.post(this.basePath, this.save);
-    application.put(`${this.basePath}/:id`, [this.validateId, this.replace]);
-    application.patch(`${this.basePath}/:id`, [this.validateId, this.update]);
-    application.del(`${this.basePath}/:id`, [this.validateId, this.delete]);
+    application.get({ path: this.basePath, version: "1.0.0" }, [
+      authorize("admin"),
+      this.findAll,
+    ]);
+    application.get(`${this.basePath}/:id`, [
+      authorize("admin", "user"),
+      this.validateId,
+      this.verifyUser,
+      this.findById,
+    ]);
+    application.post(this.basePath, [authorize("admin"), this.save]);
+    application.put(`${this.basePath}/:id`, [
+      authorize("admin", "user"),
+      this.validateId,
+      this.verifyUser,
+      this.replace,
+    ]);
+    application.patch(`${this.basePath}/:id`, [
+      authorize("admin", "user"),
+      this.validateId,
+      this.verifyUser,
+      this.update,
+    ]);
+    application.del(`${this.basePath}/:id`, [
+      authorize("admin"),
+      this.validateId,
+      this.delete,
+    ]);
     application.post(`${this.basePath}/authenticate`, authenticate);
   }
 }

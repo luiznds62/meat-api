@@ -9,7 +9,9 @@ export interface User extends mongoose.Document {
   cpf: string;
   email: string;
   password: string;
+  profiles: string[];
   matches(password: string): boolean;
+  hasAny(...profiles: string[]): boolean;
 }
 
 export interface UserModel extends mongoose.Model<User> {
@@ -43,9 +45,17 @@ const userSchema = new mongoose.Schema({
     required: false,
     enum: ["Male", "Female"],
   },
+  profiles: {
+    type: [String],
+    required: false,
+  },
 });
 
-userSchema.statics.matches = function (password: string): boolean {
+userSchema.methods.hasAny = function (...profiles: string[]): boolean {
+  return profiles.some((profile) => this.profiles.indexOf(profile) != -1);
+};
+
+userSchema.methods.matches = function (password: string): boolean {
   return bcrypt.compareSync(password, this.password);
 };
 

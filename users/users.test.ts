@@ -243,3 +243,36 @@ test("put /users:/id", () => {
     })
     .catch(fail);
 });
+
+test("delete /users/:id", () => {
+  return request(address)
+    .post("/users")
+    .send({
+      name: "usuario23",
+      email: "usuario23@email.com",
+      password: "123456",
+      cpf: "97799150017",
+      gender: "Male",
+    })
+    .then((response) => request(address).delete(`/users/${response.body._id}`))
+    .then((response) => {
+      expect(response.status).toBe(204);
+    })
+    .catch(fail);
+});
+
+test("post /users/authenticate", () => {
+  return request(address)
+    .post("/users/authenticate")
+    .send({
+      email: "user7@gmail.com",
+      password: "123456",
+    })
+    .then((response) => {
+      expect(response.status).toBe(200);
+      expect(response.body.name).toBeDefined();
+      expect(response.body.email).toBeDefined();
+      expect(response.body.token).toBeDefined();
+    })
+    .catch(fail);
+});
