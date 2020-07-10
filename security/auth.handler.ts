@@ -9,6 +9,7 @@ export const authenticate: restify.RequestHandler = (req, resp, next) => {
   User.findByEmail(email, "+password")
     .then((user) => {
       if (user && user.matches(password)) {
+        console.log("auqi o disgraça");
         const token = jwt.sign(
           {
             sub: user.email,

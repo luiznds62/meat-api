@@ -47,15 +47,12 @@ class UsersRouter extends ModelRouter<User> {
   };
 
   applyRoutes(application: restify.Server) {
-    application.get(
-      { path: this.basePath, version: "2.0.0" },
+    application.get(this.basePath, [
       authorize("admin"),
-      this.findByEmail
-    );
-    application.get({ path: this.basePath, version: "1.0.0" }, [
-      authorize("admin"),
+      this.findByEmail,
       this.findAll,
     ]);
+
     application.get(`${this.basePath}/:id`, [
       authorize("admin", "user"),
       this.validateId,

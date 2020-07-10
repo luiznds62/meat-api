@@ -1,6 +1,6 @@
 import { User } from "../users/users.model";
 
-export const checkDuplicatedCPF = (email: String, cpf: String) => {
+export const checkDuplicatedCPF = (email: string, cpf: string) => {
   return User.findOne({ cpf: cpf })
     .then((user: User) => {
       if (user && user.email != email) {

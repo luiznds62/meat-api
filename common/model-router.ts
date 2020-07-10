@@ -71,7 +71,7 @@ export abstract class ModelRouter<D extends mongoose.Document> extends Router {
     const skip = (page - 1) * this.pageSize;
 
     this.model
-      .count({})
+      .countDocuments({})
       .exec()
       .then((count) =>
         this.model
@@ -104,7 +104,7 @@ export abstract class ModelRouter<D extends mongoose.Document> extends Router {
   replace = (req, resp, next) => {
     const options = { overwrite: true, runValidators: true };
     (<any>this.model)
-      .update({ _id: req.params.id }, req.body, options)
+      .replaceOne({ _id: req.params.id }, req.body, options)
       .exec()
       .then((result) => {
         if (result.n) {
@@ -123,15 +123,15 @@ export abstract class ModelRouter<D extends mongoose.Document> extends Router {
       this.model.findByIdAndUpdate(req.params.id, req.body, options)
     )
       .then(this.render(resp, next))
-      .catch(next);
+      .catch((err) => next(new Error(err)));
   };
 
   delete = (req, resp, next) => {
     this.model
-      .remove({ _id: req.params.id })
+      .deleteOne({ _id: req.params.id })
       .exec()
-      .then((cmdResult: any) => {
-        if (cmdResult.result.n) {
+      .then((cmdResult) => {
+        if (cmdResult.deletedCount == 1) {
           resp.send(204);
         } else {
           throw new NotFoundError("Documento não encontrado");

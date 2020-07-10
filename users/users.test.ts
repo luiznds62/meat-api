@@ -269,39 +269,16 @@ test("put /users:/id", () => {
           name: "usuario 7",
           email: "user7@gmail.com",
           password: "123456",
-          cpf: "613.586.318-59",
+          cpf: "61358631859",
         })
     )
     .then((response) => {
       expect(response.status).toBe(200);
       expect(response.body.name).toBe("usuario 7");
       expect(response.body.email).toBe("user7@gmail.com");
-      expect(response.body.cpf).toBe("613.586.318-59");
+      expect(response.body.cpf).toBe("61358631859");
       expect(response.body.gender).toBeUndefined();
       expect(response.body.password).toBeUndefined();
-    })
-    .catch(fail);
-});
-
-test("delete /users/:id", () => {
-  return request(address)
-    .post("/users")
-    .set("Authorization", auth)
-    .send({
-      name: "usuario23",
-      email: "usuario23@email.com",
-      password: "123456",
-      cpf: "97799150017",
-      gender: "Male",
-      profile: ["admin"],
-    })
-    .then((response) =>
-      request(address)
-        .delete(`/users/${response.body._id}`)
-        .set("Authorization", auth)
-    )
-    .then((response) => {
-      expect(response.status).toBe(204);
     })
     .catch(fail);
 });
@@ -318,6 +295,43 @@ test("post /users/authenticate", () => {
       expect(response.body.name).toBeDefined();
       expect(response.body.email).toBeDefined();
       expect(response.body.accessToken).toBeDefined();
+    })
+    .catch(fail);
+});
+
+test("post /users/authenticate - invalid credentials", () => {
+  return request(address)
+    .post("/users/authenticate")
+    .send({
+      email: "user7@gmail.com",
+      password: "xxxxxx",
+    })
+    .then((response) => {
+      expect(response.status).toBe(403);
+      expect(response.body.message).toBe("Credenciais inválidas");
+    })
+    .catch(fail);
+});
+
+test("delete /users/:id", () => {
+  return request(address)
+    .post("/users")
+    .set("Authorization", auth)
+    .send({
+      name: "usuario66",
+      email: "usuario66@email.com",
+      password: "123456",
+      cpf: "87326601038",
+      gender: "Male",
+      profile: ["admin"],
+    })
+    .then((response) =>
+      request(address)
+        .delete(`/users/${response.body._id}`)
+        .set("Authorization", auth)
+    )
+    .then((response) => {
+      expect(response.status).toBe(204);
     })
     .catch(fail);
 });

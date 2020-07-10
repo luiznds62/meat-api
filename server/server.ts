@@ -1,4 +1,5 @@
 import * as restify from "restify";
+//import * as corsMiddleware from "restify-cors-middleware";
 import * as mongoose from "mongoose";
 import * as fs from "fs";
 
@@ -12,10 +13,13 @@ import { handleError } from "./error.handler";
 export class Server {
   application: restify.Server;
 
-  initializeDb(): mongoose.MongooseThenable {
+  initializeDb(): Promise<mongoose.Mongoose> {
     (<any>mongoose).Promise = global.Promise;
+    mongoose.set("useCreateIndex", true);
+    mongoose.set("useFindAndModify", false);
     return mongoose.connect(environment.db.url, {
-      useMongoClient: true,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
   }
 
@@ -37,6 +41,18 @@ export class Server {
 
         this.application = restify.createServer(options);
 
+        // No mesmo domínio não precisa
+        /*const corsOption: corsMiddleware.Options = {
+          preflightMaxAge: 86400,
+          origins: ["*"],
+          allowHeaders: ["authorization"],
+          exposeHeaders: [""],
+        };
+
+        const cors: corsMiddleware.CorsMiddleware = corsMiddleware(corsOption);*/
+
+        //this.application.pre(cors.preflight);
+        //this.application.use(cors.actual);
         this.application.use(restify.plugins.queryParser());
         this.application.use(restify.plugins.bodyParser());
         this.application.use(mergePatchBodyParser);

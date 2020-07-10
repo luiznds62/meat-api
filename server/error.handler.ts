@@ -1,24 +1,21 @@
 import * as restify from "restify";
 
-export const handleError = (
+export function handleError(
   req: restify.Request,
   resp: restify.Response,
   err,
-  done
-) => {
-  err.toJSON = () => {
-    return {
-      message: err.message,
-    };
-  };
+  cb
+) {
+  let handledError = undefined;
 
   switch (err.name) {
     case "MongoError":
       if (err.code === 11000) {
+        err.handled = true;
         err.statusCode = 400;
-        err.toJSON = () => ({
+        handledError = {
           message: `Valor ${err.errmsg.split('"')[1]} duplicado`,
-        });
+        };
       }
 
       break;
@@ -68,12 +65,18 @@ export const handleError = (
             break;
         }
       }
-      err.toJSON = () => ({
+      handledError = {
         message: "Ocorreu um erro de validação",
         errors: messages,
-      });
+      };
       break;
   }
 
-  done();
-};
+  if (!handledError) {
+    handledError = {
+      message: err.message,
+    };
+  }
+  resp.send(err.statusCode, handledError);
+  return cb();
+}

@@ -15,7 +15,7 @@ module.exports = {
     },
     env_production: {
       SERVER_PORT: 5000,
-      DB_URL: "mongodb+srv://luiznds:NYtGaO8Jhsa3oaVz@clusteri.udzsk.gcp.mongodb.net/meat-api-prod?retryWrites=true&w=majority",
+      DB_URL: "mongodb://localhost/meat-api",
       NODE_ENV: "production"
     }
   }],

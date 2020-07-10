@@ -57,6 +57,8 @@ userSchema.methods.hasAny = function (...profiles: string[]): boolean {
 };
 
 userSchema.methods.matches = function (password: string): boolean {
+  console.log(password);
+  console.log(this.password);
   return bcrypt.compareSync(password, this.password);
 };
 
@@ -113,5 +115,6 @@ userSchema.pre("validate", validateMiddleware);
 userSchema.pre("save", saveMiddleware);
 userSchema.pre("findOneAndUpdate", updateMiddleware);
 userSchema.pre("update", updateMiddleware);
+userSchema.pre("replaceOne", updateMiddleware);
 
 export const User = mongoose.model<User, UserModel>("User", userSchema);
